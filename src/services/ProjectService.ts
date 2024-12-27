@@ -181,10 +181,12 @@ class ProjectService {
             project.id = project.name;
         }
 
-        const config = this.appConfigService.getConfig();
+        const config = this.appConfigService.config;
 
         if(!this.appConfigService.fs.exists(`projects/${project.id}`)) {
-            this.appConfigService.fs.mkdir(`projects/${project.id}`, {recursive: true});
+            this.appConfigService.fs.mkdir(`projects/${project.id}`, {
+                recursive: true
+            });
         }
 
         const {

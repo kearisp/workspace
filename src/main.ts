@@ -1,4 +1,4 @@
-import {Factory} from "@wocker/core";
+import {Factory, CommandNotFoundError} from "@wocker/core";
 import chalk from "chalk";
 
 import {AppModule} from "./AppModule";
@@ -21,6 +21,10 @@ export const app = {
         }
         catch(err) {
             console.error(chalk.red(err.message));
+
+            if(err instanceof CommandNotFoundError) {
+                return;
+            }
 
             const {debug} = config.getConfig();
 

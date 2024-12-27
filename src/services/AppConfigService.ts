@@ -34,11 +34,11 @@ export class AppConfigService extends CoreAppConfigService {
         this._pwd = (process.cwd() || process.env.PWD) as string;
     }
 
-    get version(): string {
+    public get version(): string {
         return WOCKER_VERSION;
     }
 
-    get fs(): FileSystem {
+    public get fs(): FileSystem {
         if(!this._fs) {
             this._fs = new FileSystem(DATA_DIR);
         }

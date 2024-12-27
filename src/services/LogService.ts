@@ -1,10 +1,11 @@
 import {
+    FileSystem,
     Injectable,
     LogService as CoreLogService
 } from "@wocker/core";
 import dateFormat from "date-fns/format";
 
-import {FS, Logger} from "../makes";
+import {Logger} from "../makes";
 import {AppConfigService} from "./AppConfigService";
 
 
@@ -16,6 +17,14 @@ export class LogService extends CoreLogService {
         super();
 
         Logger.install(this);
+    }
+
+    protected get fs(): FileSystem {
+        return this.appConfigService.fs;
+    }
+
+    protected get logName(): string {
+        return "ws.log";
     }
 
     public debug(...data: any[]): void {
@@ -39,29 +48,23 @@ export class LogService extends CoreLogService {
     }
 
     public clear(): void {
-        const logPath = this.appConfigService.dataPath("ws.log");
-
-        FS.writeFileSync(logPath, "");
+        this.fs.writeFile(this.logName, "");
     }
 
     protected _log(type: string, ...data: any[]): void {
-        const config = this.appConfigService.getConfig();
-
-        if(type === "debug" && !config.debug) {
+        if(type === "debug" && !this.appConfigService.config.debug) {
             return;
         }
 
-        const time = dateFormat(new Date(), "yyyy-MM-dd hh:mm:ss");
-        const logPath = this.appConfigService.dataPath("ws.log");
-
-        const logData = data.map((item): string => {
+        const time = dateFormat(new Date(), "yyyy-MM-dd HH:mm:ss"),
+            logData = data.map((item): string => {
             return typeof item !== "string" ? JSON.stringify(item) : item;
         }).join(" ");
 
-        if(!FS.existsSync(logPath)) {
-            FS.writeFileSync(logPath, "");
+        if(!this.fs.exists(this.logName)) {
+            this.fs.writeFile(this.logName, "");
         }
 
-        FS.appendFileSync(logPath, `[${time}] ${type}: ${logData}\n`);
+        this.fs.appendFile(this.logName, `[${time}] ${type}: ${logData}\n`);
     }
 }

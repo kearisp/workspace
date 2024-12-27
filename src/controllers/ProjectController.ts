@@ -167,6 +167,15 @@ export class ProjectController {
         await project.save();
     }
 
+    @Command("deinit [name]")
+    @Description("Project deinitialiastion")
+    public async deinit(
+        @Param("name")
+        name?: string
+    ): Promise<void> {
+        const project = this.projectService.get(name);
+    }
+
     @Command("ps")
     @Description("Projects list")
     public async projectList(

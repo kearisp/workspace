@@ -16,17 +16,20 @@ export class DebugController {
         protected readonly logService: LogService
     ) {}
 
+    @Command("debug")
+    public async debug(): Promise<string> {
+        return this.appConfigService.config.debug ? "on" : "off";
+    }
+
     @Command("debug:<status>")
     @Command("debug <status>")
-    public async debug(
+    public async setDebug(
         @Param("status")
         status: string
     ): Promise<void> {
-        const config = this.appConfigService.getConfig();
+        this.appConfigService.config.debug = status === "on";
 
-        config.debug = status === "on";
-
-        await config.save();
+        await this.appConfigService.config.save();
     }
 
     @Description("Set the log level (options: debug, log, info, warn, error)")
@@ -37,7 +40,7 @@ export class DebugController {
     ): Promise<void> {
         const validLevels = this.getLevels();
 
-        if (!validLevels.includes(level)) {
+        if(!validLevels.includes(level)) {
             throw new Error(`Invalid log level: ${level}. Valid options are ${validLevels.join(', ')}`);
         }
 
